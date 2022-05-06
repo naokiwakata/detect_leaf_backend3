@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DetectLeaf</title>
+</head>
+
+<body>
+    <h1>Detect Leaf</h1>
+    <!--multipart/form-data 複数の種類のデータを一度に扱える形式-->
+    <form enctype="multipart/form-data">
+        <!--input: 入力エリアの作成 type="file": ファイル名を入力 name:入力フィールド名-->
+        <input type="file" name="file">
+        <!--formmethod HTTPメソッド-->
+        <button type="submit" formmethod="post">POST</button></p>
+        {% if img_path %}
+        <div>
+            <img src="{{ img_path }}" style="width: 300px;">
+        </div>
+        <p>{{ img_path }}</p>
+        {% endif %}
+
+        {% if img_paths %}
+        {% for img_path in img_paths %}
+        <img src="{{ img_path }}" style="width: 100px;">
+        {% endfor %}
+        {% endif %}
+    </form>
+</body>
+
+</html>
