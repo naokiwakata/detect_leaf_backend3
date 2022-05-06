@@ -28,12 +28,12 @@ class Predictor:
 
         # 設定を決める
         cfg = get_cfg()
-        cfg.merge_from_file(model_zoo.get_config_file(
-            "COCO-InstanceSegmentation\\mask_rcnn_R_50_FPN_3x.yaml"))
+        yamlPath = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"#mac
+        cfg.merge_from_file(model_zoo.get_config_file(yamlPath))
         cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # 1クラスのみ
 
-        cfg.MODEL.WEIGHTS = os.path.join(
-            cfg.OUTPUT_DIR, "C:\\Users\\wakanao\\react-flask\\detect_leaf_backend\\model_final.pth")  # 絶対パスでなければならないっぽい
+        pthPath = "/Users/wakatanaoki/detect_leaf_backend3/model_final.pth" #mac
+        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, pthPath)  # 絶対パスでなければならないっぽい
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.6
         cfg.MODEL.DEVICE = "cpu"
 
