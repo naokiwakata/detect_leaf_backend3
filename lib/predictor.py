@@ -18,6 +18,9 @@ class Predictor:
     _img = None
     _img_dir = "static/imgs/"
     _img_paths = []
+    _pred_boxes = None
+    _pred_masks = None
+    _pred_classes = None
 
     def __init__(self):
         # データセットを登録
@@ -32,10 +35,11 @@ class Predictor:
         yamlPath = "COCO-InstanceSegmentation\\mask_rcnn_R_50_FPN_3x.yaml"  # windows
 
         cfg.merge_from_file(model_zoo.get_config_file(yamlPath))
-        cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # 1クラスのみ
+        cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2  # 1クラスのみ
 
         pthPath = "/Users/wakatanaoki/detect_leaf_backend3/model_final.pth"  # mac
-        pthPath = "C:\\Users\\wakanao\\react-flask\\detect_leaf_backend\\model_final.pth"  # windows
+        pthPath = "C:\\Users\\wakanao\\projects\\react-flask\\detect_backend\\model\\model_final2.pth"  # windows
+        pthPath = "C:\\Users\\wakanao\\projects\\react-flask\\detect_backend\\model\\hyper_image_model.pth" 
 
         cfg.MODEL.WEIGHTS = os.path.join(
             cfg.OUTPUT_DIR, pthPath)  # 絶対パスでなければならないっぽい
@@ -57,9 +61,26 @@ class Predictor:
     def img_paths(self):
         return self._img_paths
 
+    @property
+    def pred_boxes(self):
+        return self._pred_boxes
+    
+    @property
+    def pred_masks(self):
+        return self._pred_masks
+    
+    @property
+    def pred_classes(self):
+        return self._pred_classes
+
     def predict(self, img):
         self._original_img = img
         self._outputs = self._predictor(img)
+        fields = self._outputs['instances'].get_fields()
+        self._pred_boxes = fields['pred_boxes']
+        self._pred_masks = fields['pred_masks']
+        self._pred_classes = fields['pred_classes']
+
         v = Visualizer(img[:, :, ::-1],
                        metadata=self._metadata,
                        scale=1.0
@@ -81,7 +102,6 @@ class Predictor:
             x2 = round(box[2].item())+5
             y2 = round(box[3].item())+5
             cut_img = self._original_img[y1:y2, x1:x2]
-            dt_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
-            img_path = self._img_dir + dt_now + ".jpg"
+            img_path = self._img_dir + str(i) + ".jpg"
             self._img_paths.append(img_path)
             cv2.imwrite(img_path, cut_img)
