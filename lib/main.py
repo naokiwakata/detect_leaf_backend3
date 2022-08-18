@@ -19,6 +19,7 @@ from predictor import Predictor
 from flask_cors import CORS
 import base64
 
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -111,11 +112,22 @@ def find():
     pred_masks = predictor.pred_masks.to('cpu').detach().numpy().tolist()
     pred_classes = predictor.pred_classes.to('cpu').detach().numpy().tolist()
 
-    response = {'Boxes': pred_boxes,
+    response = {
+                'Boxes': pred_boxes,
                 'Masks': pred_masks,
-                'Classes': pred_classes, }
+                'Classes': pred_classes, 
+                }
+    print('dumpppp start')
+    ## json.dumps の方が圧倒的に早い。余計なものがないからか？
+    dump = json.dumps(response)
+    print('dumpppp finish')
+
+    ## めっちゃ遅い
+    # jsonData = jsonify(response)
+
+
     print(len(pred_boxes))
-    return make_response(jsonify(response))
+    return make_response(dump)
 
 
 @app.route("/judgeDisease", methods=['GET', 'POST'])
@@ -141,9 +153,10 @@ def judge():
         print(predict)
         predicts[key] = predict[0]
     response = {'Predicts': predicts}
-    return make_response(jsonify(response))
+    dump = json.dumps(response)
+    return make_response(dump)
 
 
 if __name__ == "__main__":
     app.debug = True
-    app.run(host='127.0.0.1', port=5000)
+    app.run(host='127.0.0.1', port=5000, threaded=True)
